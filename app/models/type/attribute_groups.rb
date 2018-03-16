@@ -99,7 +99,7 @@ module Type::AttributeGroups
     # a plugin leaving an empty group behind. If we did not delete such a
     # group, the admin saving such a form configuration would encounter an
     # unexpected/unexplicable validation error.
-    valid_keys = work_package_attributes.keys
+    valid_keys = item_attributes.keys
     groups.each do |_, attributes|
       attributes.select! { |attribute| valid_keys.include? attribute }
     end
@@ -111,7 +111,7 @@ module Type::AttributeGroups
   # Returns the default +attribute_groups+ put together by
   # the default group map.
   def default_attribute_groups
-    values = work_package_attributes
+    values = item_attributes
              .keys
              .reject { |key| custom_field?(key) && !has_custom_field?(key) }
              .group_by { |key| default_group_key(key.to_sym) }
@@ -128,7 +128,7 @@ module Type::AttributeGroups
   ##
   # Collect active and inactive form configuration groups for editing.
   def form_configuration_groups
-    available = work_package_attributes
+    available = item_attributes
     # First we create a complete list of all attributes.
     # Later we will remove those that are members of an attribute group.
     # This way attributes that were created after the las group definitions
@@ -158,7 +158,7 @@ module Type::AttributeGroups
 
   ##
   # Collect active attributes from the current form configuration.
-  # Using the available attributes from +work_package_attributes+,
+  # Using the available attributes from +item_attributes+,
   # determines which attributes are not used
   def get_active_groups(available, inactive)
     attribute_groups.map do |group|
@@ -180,7 +180,7 @@ module Type::AttributeGroups
   end
 
   def validate_attribute_groups
-    valid_attributes = work_package_attributes.keys
+    valid_attributes = item_attributes.keys
     attribute_groups.each do |_, attributes|
       attributes.each do |key|
         if valid_attributes.exclude? key

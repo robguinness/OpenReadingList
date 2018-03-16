@@ -57,19 +57,19 @@ module Type::Attributes
     #
     # E.g.
     #
-    #   ::Type.work_package_form_attributes['author'][:required] # => true
+    #   ::Type.item_form_attributes['author'][:required] # => true
     #
     # @return [Hash{String => Hash}] Map from attribute names to options.
-    def all_work_package_form_attributes(merge_date: false)
-      OpenProject::Cache.fetch('all_work_package_form_attributes',
-                               *WorkPackageCustomField.pluck('max(updated_at), count(id)').flatten,
+    def all_item_form_attributes(merge_date: false)
+      OpenProject::Cache.fetch('all_item_form_attributes',
+                               *ItemCustomField.pluck('max(updated_at), count(id)').flatten,
                                merge_date) do
-        calculate_all_work_package_form_attributes(merge_date)
+        calculate_all_item_form_attributes(merge_date)
       end
     end
 
-    def translated_work_package_form_attributes(merge_date: false)
-      all_work_package_form_attributes(merge_date: merge_date)
+    def translated_item_form_attributes(merge_date: false)
+      all_item_form_attributes(merge_date: merge_date)
         .each_with_object({}) do |(k, v), hash|
         hash[k] = translated_attribute_name(k, v)
       end
@@ -85,8 +85,8 @@ module Type::Attributes
 
     private
 
-    def calculate_all_work_package_form_attributes(merge_date)
-      attributes = calculate_default_work_package_form_attributes
+    def calculate_all_item_form_attributes(merge_date)
+      attributes = calculate_default_item_form_attributes
 
       # within the form date is shown as a single entry including start and due
       if merge_date
@@ -98,8 +98,8 @@ module Type::Attributes
       attributes
     end
 
-    def calculate_default_work_package_form_attributes
-      representable_config = API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter
+    def calculate_default_item_form_attributes
+      representable_config = API::V3::Items::Schema::ItemSchemaRepresenter
                              .representable_attrs
 
       # For reasons beyond me, Representable::Config contains the definitions
@@ -120,7 +120,7 @@ module Type::Attributes
     end
 
     def add_custom_fields_to_form_attributes(attributes)
-      WorkPackageCustomField.includes(:custom_options).all.each do |field|
+      ItemCustomField.includes(:custom_options).all.each do |field|
         attributes["custom_field_#{field.id}"] = {
           required: field.is_required,
           has_default: field.default_value.present?,
@@ -144,7 +144,7 @@ module Type::Attributes
         I18n.t('label_date')
       else
         key = attr_i18n_key(name)
-        I18n.t("activerecord.attributes.work_package.#{key}", default: '')
+        I18n.t("activerecord.attributes.item.#{key}", default: '')
           .presence || I18n.t("attributes.#{key}")
       end
     end
@@ -165,8 +165,8 @@ module Type::Attributes
 
   ##
   # Get all applicale work package attributes
-  def work_package_attributes(merge_date: true)
-    all_attributes = self.class.all_work_package_form_attributes(merge_date: merge_date)
+  def item_attributes(merge_date: true)
+    all_attributes = self.class.all_item_form_attributes(merge_date: merge_date)
 
     # Reject those attributes that are not available for this type.
     all_attributes.select { |key, _| passes_attribute_constraint? key }
@@ -201,7 +201,7 @@ module Type::Attributes
   # Returns whether the custom field is active in the given project.
   def custom_field_in_project?(attribute, project)
     project
-      .all_work_package_custom_fields.pluck(:id)
+      .all_item_custom_fields.pluck(:id)
       .map { |id| "custom_field_#{id}" }
       .include? attribute
   end
