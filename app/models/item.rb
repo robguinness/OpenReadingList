@@ -28,16 +28,16 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-class WorkPackage < ActiveRecord::Base
-  include WorkPackage::Validations
-  include WorkPackage::SchedulingRules
-  include WorkPackage::StatusTransitions
-  include WorkPackage::AskBeforeDestruction
-  include WorkPackage::TimeEntries
-  include WorkPackage::Ancestors
-  prepend WorkPackage::Parent
-  include WorkPackage::TypedDagDefaults
-  include WorkPackage::CustomActions
+class Item < ActiveRecord::Base
+  include Item::Validations
+  include Item::SchedulingRules
+  include Item::StatusTransitions
+  include Item::AskBeforeDestruction
+  include Item::TimeEntries
+  include Item::Ancestors
+  prepend Item::Parent
+  include Item::TypedDagDefaults
+  include Item::CustomActions
 
   include OpenProject::Journal::AttachmentHelper
 
@@ -79,7 +79,7 @@ class WorkPackage < ActiveRecord::Base
 
   scope :changed_since, ->(changed_since) {
     if changed_since
-      where(["#{WorkPackage.table_name}.updated_at >= ?", changed_since])
+      where(["#{Item.table_name}.updated_at >= ?", changed_since])
     end
   }
 
@@ -152,7 +152,7 @@ class WorkPackage < ActiveRecord::Base
                                        },
                                        method(:cleanup_time_entries_before_destruction_of)
 
-  include WorkPackage::Journalized
+  include Item::Journalized
 
   def self.done_ratio_disabled?
     Setting.work_package_done_ratio == 'disabled'
@@ -282,7 +282,7 @@ class WorkPackage < ActiveRecord::Base
   end
 
   def done_ratio
-    if WorkPackage.use_status_for_done_ratio? && status && status.default_done_ratio
+    if Item.use_status_for_done_ratio? && status && status.default_done_ratio
       status.default_done_ratio
     else
       read_attribute(:done_ratio)
@@ -330,7 +330,7 @@ class WorkPackage < ActiveRecord::Base
   # Set the done_ratio using the status if that setting is set.  This will keep the done_ratios
   # even if the user turns off the setting later
   def update_done_ratio_from_status
-    if WorkPackage.use_status_for_done_ratio? && status && status.default_done_ratio
+    if Item.use_status_for_done_ratio? && status && status.default_done_ratio
       self.done_ratio = status.default_done_ratio
     end
   end
@@ -342,7 +342,7 @@ class WorkPackage < ActiveRecord::Base
     done_date <= Date.today
   end
 
-  # check if user is allowed to edit WorkPackage Journals.
+  # check if user is allowed to edit Item Journals.
   # see Redmine::Acts::Journalized::Permissions#journal_editable_by
   def editable_by?(user)
     project = self.project
@@ -354,7 +354,7 @@ class WorkPackage < ActiveRecord::Base
   # patch in config/initializers/eager_load_with_hours, the value is
   # returned as the #hours attribute on each work package.
   def self.include_spent_hours(user)
-    WorkPackage::SpentTime
+    Item::SpentTime
       .new(user)
       .scope
       .select('SUM(time_entries.hours) AS hours')
@@ -369,7 +369,7 @@ class WorkPackage < ActiveRecord::Base
   #   spent_hours => 50.2
   #
   #   The value can stem from either eager loading the value via
-  #   WorkPackage.include_spent_hours in which case the work package has an
+  #   Item.include_spent_hours in which case the work package has an
   #   #hours attribute or it is loaded on calling the method.
   def spent_hours(user = User.current)
     if respond_to?(:hours)
@@ -394,7 +394,7 @@ class WorkPackage < ActiveRecord::Base
   # Unassigns issues from +version+ if it's no longer shared with issue's project
   def self.update_versions_from_sharing_change(version)
     # Update issues assigned to the version
-    update_versions(["#{WorkPackage.table_name}.fixed_version_id = ?", version.id])
+    update_versions(["#{Item.table_name}.fixed_version_id = ?", version.id])
   end
 
   # Unassigns issues from versions that are no longer shared
@@ -403,7 +403,7 @@ class WorkPackage < ActiveRecord::Base
     moved_project_ids = project.self_and_descendants.reload.map(&:id)
     # Update issues of the moved projects and issues assigned to a version of a moved project
     update_versions(
-      ["#{Version.table_name}.project_id IN (?) OR #{WorkPackage.table_name}.project_id IN (?)",
+      ["#{Version.table_name}.project_id IN (?) OR #{Item.table_name}.project_id IN (?)",
        moved_project_ids,
        moved_project_ids]
     )
@@ -461,7 +461,7 @@ class WorkPackage < ActiveRecord::Base
         i.project_id as project_id,
         count(i.id) as total
       from
-        #{WorkPackage.table_name} i, #{Status.table_name} s
+        #{Item.table_name} i, #{Status.table_name} s
       where
         i.status_id=s.id
         and i.project_id IN (#{project.descendants.active.map(&:id).join(',')})
@@ -608,8 +608,8 @@ class WorkPackage < ActiveRecord::Base
 
   def self.having_fixed_version_from_other_project
     where(
-      "#{WorkPackage.table_name}.fixed_version_id IS NOT NULL" +
-      " AND #{WorkPackage.table_name}.project_id <> #{Version.table_name}.project_id" +
+      "#{Item.table_name}.fixed_version_id IS NOT NULL" +
+      " AND #{Item.table_name}.project_id <> #{Version.table_name}.project_id" +
       " AND #{Version.table_name}.sharing <> 'system'"
     )
   end
@@ -687,7 +687,7 @@ class WorkPackage < ActiveRecord::Base
         j.id as #{select_field},
         count(i.id) as total
       from
-          #{WorkPackage.table_name} i, #{Status.table_name} s, #{joins} j
+          #{Item.table_name} i, #{Status.table_name} s, #{joins} j
       where
         i.status_id=s.id
         and #{where}
@@ -704,7 +704,7 @@ class WorkPackage < ActiveRecord::Base
   end
 
   def compute_spent_hours(user)
-    WorkPackage::SpentTime
+    Item::SpentTime
       .new(user, self)
       .scope
       .where(id: id)
