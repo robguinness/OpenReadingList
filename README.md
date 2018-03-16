@@ -42,7 +42,7 @@ See [docs/COPYRIGHT.rdoc](docs/COPYRIGHT.rdoc) for details.
 
 ### Icons
 
-[comment]: # Thanks to Vincent Le Moign and his fabulous Minicons icons on [webalys.com](http://www.webalys.com/minicons/icons-free-pack.php).
+<!--  Thanks to Vincent Le Moign and his fabulous Minicons icons on [webalys.com](http://www.webalys.com/minicons/icons-free-pack.php). -->
 
 ### Lato Font
 
@@ -50,14 +50,14 @@ Thanks to Łukasz Dziedzic (aka "tyPoland") for his 'Lato' font.
 
 ### OpenReadingList icon font
 
-[comment]: # Published and created by the OpenReadingList Foundation (OPF) under [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/)
-[comment]: # with icons from the following sources
+<!-- Published and created by the OpenReadingList Foundation (OPF) under [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/)
+ with icons from the following sources -->
 [Minicons Free Vector Icons Pack](http://www.webalys.com/minicons) and
 [User Interface Design framework](http://www.webalys.com/design-interface-application-framework.php) both by webalys
 
 **Creative Commons License**
 
-[comment]: # OpenReadingList Icon Font by the OpenReadingList Foundation (OPF) is licensed under Creative Commons Attribution 3.0 Unported License
-[comment]: # and Free for both personal and commercial use. You can copy, adapt, remix, distribute or transmit it.
-
-[comment]: # Under this condition: provide a mention of the "OpenReadingList Foundation" and a link back to OpenReadingList www.openproject.org.
+<!-- OpenReadingList Icon Font by the OpenReadingList Foundation (OPF) is licensed under Creative Commons Attribution 3.0 Unported License
+ and Free for both personal and commercial use. You can copy, adapt, remix, distribute or transmit it.
+ Under this condition: provide a mention of the "OpenReadingList Foundation" and a link back to OpenReadingList www.openproject.org.
+-->
