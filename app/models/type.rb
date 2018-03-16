@@ -47,7 +47,7 @@ class ::Type < ActiveRecord::Base
   has_and_belongs_to_many :projects
 
   has_and_belongs_to_many :custom_fields,
-                          class_name: 'WorkPackageCustomField',
+                          class_name: 'ItemCustomField',
                           join_table: "#{table_name_prefix}custom_fields_types#{table_name_suffix}",
                           association_foreign_key: 'custom_field_id'
 
@@ -117,7 +117,7 @@ class ::Type < ActiveRecord::Base
   private
 
   def check_integrity
-    raise "Can't delete type" if WorkPackage.where(type_id: id).any?
+    raise "Can't delete type" if Item.where(type_id: id).any?
   end
 
   def transition_exists?(status_id_a, status_id_b, role_ids)
