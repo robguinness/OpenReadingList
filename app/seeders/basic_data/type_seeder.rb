@@ -66,18 +66,18 @@ module BasicData
     end
 
     def type_names
-      [:task, :milestone, :phase, :feature, :epic, :user_story, :bug]
+      [:book, :article, :website, :blog, :tutorial, :news_item, :video]
     end
 
     def type_table
       { # position is_default color_id is_in_roadmap in_aggregation is_milestone
-        task:       [1, true, :default_color_blue,        true,  false, false],
-        milestone:  [2, true, :default_color_green_light, false, true,  true],
-        phase:      [3, true, :default_color_blue_dark,   false, true,  false],
-        feature:    [4, true, :default_color_blue,        true,  false, false],
-        epic:       [5, true, :default_color_orange,      true,  true,  false],
-        user_story: [6, true, :default_color_grey_dark,   true,  false, false],
-        bug:        [7, true, :default_color_red,         true,  false, false]
+        book:       [1, true, :default_color_blue,        true,  false, false],
+        article:  [2, true, :default_color_green_light, false, true,  true],
+        website:      [3, true, :default_color_blue_dark,   false, true,  false],
+        blog:    [4, true, :default_color_blue,        true,  false, false],
+        tutorial:       [5, true, :default_color_orange,      true,  true,  false],
+        news_item: [6, true, :default_color_grey_dark,   true,  false, false],
+        video:        [7, true, :default_color_red,         true,  false, false]
       }
     end
   end
